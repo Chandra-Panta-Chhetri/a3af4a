@@ -12,7 +12,6 @@ thread = None
 
 @sio.event
 def connect(sid, environ):
-    print("here")
     sio.emit("my_response", {"data": "Connected", "count": 0}, room=sid)
 
 
