@@ -29,21 +29,10 @@ const ActiveChat = (props) => {
     <Box className={classes.root}>
       {conversation.otherUser && (
         <>
-          <Header
-            username={conversation.otherUser.username}
-            online={conversation.otherUser.online || false}
-          />
+          <Header username={conversation.otherUser.username} online={conversation.otherUser.online || false} />
           <Box className={classes.chatContainer}>
-            <Messages
-              messages={conversation.messages}
-              otherUser={conversation.otherUser}
-              userId={user.id}
-            />
-            <Input
-              otherUser={conversation.otherUser}
-              conversationId={conversation.id}
-              user={user}
-            />
+            <Messages messages={conversation.messages} otherUser={conversation.otherUser} userId={user.id} />
+            <Input otherUser={conversation.otherUser} conversationId={conversation.id} user={user} />
           </Box>
         </>
       )}
@@ -56,9 +45,7 @@ const mapStateToProps = (state) => {
     user: state.user,
     conversation:
       state.conversations &&
-      state.conversations.find(
-        (conversation) => conversation.otherUser.username === state.activeConversation
-      )
+      state.conversations.find((conversation) => conversation.otherUser.username === state.activeConversation)
   };
 };
 

@@ -1,12 +1,8 @@
 import io from "socket.io-client";
 import store from "./store";
-import {
-  setNewMessage,
-  removeOfflineUser,
-  addOnlineUser,
-} from "./store/conversations";
+import { setNewMessage, removeOfflineUser, addOnlineUser } from "./store/conversations";
 
-const socket = io(window.location.origin);
+const socket = io("http://localhost:8000");
 
 socket.on("connect", () => {
   console.log("connected to server");
@@ -19,6 +15,7 @@ socket.on("connect", () => {
     store.dispatch(removeOfflineUser(id));
   });
   socket.on("new-message", (data) => {
+    console.log(data, "in socket on cb");
     store.dispatch(setNewMessage(data.message, data.sender));
   });
 });
