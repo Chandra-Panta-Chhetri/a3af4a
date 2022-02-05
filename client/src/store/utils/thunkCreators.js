@@ -1,6 +1,11 @@
 import axios from "axios";
 import socket from "../../socket";
-import { gotConversations, addConversation, setNewMessage, setSearchedUsers } from "../conversations";
+import {
+  gotConversations,
+  addConversation,
+  setNewMessage,
+  setSearchedUsers,
+} from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
 axios.interceptors.request.use(async function (config) {
@@ -82,7 +87,7 @@ const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
-    sender: data.sender
+    sender: data.sender,
   });
 };
 

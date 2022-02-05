@@ -1,6 +1,10 @@
 import io from "socket.io-client";
 import store from "./store";
-import { setNewMessage, removeOfflineUser, addOnlineUser } from "./store/conversations";
+import {
+  setNewMessage,
+  removeOfflineUser,
+  addOnlineUser,
+} from "./store/conversations";
 
 const socket = io("http://localhost:8000");
 
