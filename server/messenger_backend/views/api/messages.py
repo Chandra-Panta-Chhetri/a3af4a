@@ -1,3 +1,4 @@
+from urllib.request import Request
 from django.contrib.auth.middleware import get_user
 from django.http import HttpResponse, JsonResponse
 from messenger_backend.models import Conversation, Message
@@ -46,5 +47,27 @@ class Messages(APIView):
             message.save()
             message_json = message.to_dict()
             return JsonResponse({"message": message_json, "sender": sender})
+        except Exception as e:
+            return HttpResponse(status=500)
+
+
+class UpdateMessages(APIView):
+    """expects { senderId } in body"""
+    """Marks all the messages sent by senderId in a conversation as read"""
+    def patch(self, request: Request):
+        try:
+            body = request.data
+            user = get_user(request)
+
+            if user.is_anonymous:
+                return HttpResponse(status=401)
+            
+            sender_id = body.get("senderId")
+            conversation = Conversation.find_conversation(sender_id, user.id)
+            if not conversation:
+                return HttpResponse(status=404)
+            
+            Message.update_read_status_in_convo(conversation=conversation, sender_id=sender_id)
+            return HttpResponse(status=200)
         except Exception as e:
             return HttpResponse(status=500)

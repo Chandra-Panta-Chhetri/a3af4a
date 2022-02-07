@@ -75,3 +75,5 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     }
   });
 };
+
+export const markConvoAsRead = (state, conversationId) => state.map((convo) => convo.id === conversationId ? {...convo, numUnread: 0} :convo)

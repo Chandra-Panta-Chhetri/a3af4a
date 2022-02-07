@@ -37,9 +37,10 @@ class Conversations(APIView):
                 convo_dict = {
                     "id": convo.id,
                     "messages": [
-                        message.to_dict(["id", "text", "senderId", "createdAt"])
+                        message.to_dict(["id", "text", "senderId", "createdAt", "readStatus"])
                         for message in convo.messages.all()
                     ],
+                    "numUnread": 0
                 }
 
                 # set properties for notification count and latest message preview
@@ -57,6 +58,10 @@ class Conversations(APIView):
                     convo_dict["otherUser"]["online"] = True
                 else:
                     convo_dict["otherUser"]["online"] = False
+                
+                # calculate unread messages
+                other_user_id = convo_dict["otherUser"]["id"]
+                convo_dict["numUnread"] = convo.messages.filter(Q(senderId=other_user_id) & Q(readStatus=False)).count()
 
                 conversations_response.append(convo_dict)
             conversations_response.sort(
@@ -69,3 +74,8 @@ class Conversations(APIView):
             )
         except Exception as e:
             return HttpResponse(status=500)
+    
+    def patch(self, request: Request):
+        return JsonResponse(
+                "s"
+            )
