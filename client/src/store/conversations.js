@@ -5,7 +5,7 @@ import {
   removeOfflineUserFromStore,
   addMessageToStore,
   markConvoAsReadInStore,
-  markConvoAsReadByRecipientInStore
+  markMessageAsReadByRecipientInStore
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -18,7 +18,7 @@ const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
 const MARK_CONVERSATION_AS_READ = 'MARK_CONVERSATION_AS_READ';
-const CONVERSATION_READ_BY_RECIPIENT = "CONVERSATION_READ_BY_RECIPIENT";
+const MESSAGE_READ_BY_RECIPIENT = "MESSAGE_READ_BY_RECIPIENT";
 
 // ACTION CREATORS
 
@@ -79,10 +79,10 @@ export const addConversation = (recipientId, newMessage) => {
 };
 
 //For updating the read status in the active convo
-export const convoReadByRecipient = (latestMsgInConvo) => {
+export const messageReadByRecipient = (message) => {
   return {
-    type: CONVERSATION_READ_BY_RECIPIENT,
-    payload: latestMsgInConvo
+    type: MESSAGE_READ_BY_RECIPIENT,
+    payload: message
   }
 }
 
@@ -112,8 +112,8 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
-    case CONVERSATION_READ_BY_RECIPIENT:
-      return markConvoAsReadByRecipientInStore(state, action.payload);
+    case MESSAGE_READ_BY_RECIPIENT:
+      return markMessageAsReadByRecipientInStore(state, action.payload);
     default:
       return state;
   }

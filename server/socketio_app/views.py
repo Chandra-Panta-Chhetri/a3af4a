@@ -30,14 +30,10 @@ def new_message(sid, message):
         skip_sid=sid,
     )
 
-# @sio.on("read-message")
-# def read_convo(sid):
-#     sio.emit("read-convo")
-
-@sio.on("read-convo")
-def read_convo(sid, convo):
-    sio.emit("read-convo", 
-    {"message": convo["message"]}, 
+@sio.on("read-message")
+def read_convo(sid, message):
+    sio.emit("read-message", 
+    {"message": message["message"]}, 
     skip_sid=sid)
 
 @sio.on("logout")

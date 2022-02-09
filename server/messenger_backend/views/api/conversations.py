@@ -74,8 +74,3 @@ class Conversations(APIView):
             )
         except Exception as e:
             return HttpResponse(status=500)
-    
-    def patch(self, request: Request):
-        return JsonResponse(
-                "s"
-            )

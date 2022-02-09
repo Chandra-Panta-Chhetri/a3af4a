@@ -4,8 +4,9 @@ import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
-  convoReadByRecipient,
+  messageReadByRecipient,
 } from "./store/conversations";
+import { saveMessageReadStatus } from "./store/utils/thunkCreators";
 
 const socket = io("http://localhost:8000");
 
@@ -21,20 +22,20 @@ socket.on("connect", () => {
   });
 
   socket.on("new-message", (data) => {
+    const message = data.message;
+    const sender = data.sender;
     const activeConvo = store.getState().activeConversation;
-    store.dispatch(setNewMessage(data.message, data.sender, activeConvo));
+    const convos = store.getState().conversations;
+    const convoMsgBelongsTo = convos.find((c) => c.id === message.conversationId)
+
+    store.dispatch(setNewMessage(message, sender, activeConvo));
+    if(convoMsgBelongsTo && convoMsgBelongsTo.otherUser.username === activeConvo) {
+     saveMessageReadStatus(message);
+    }
   });
 
-  //When recipient is in the same convo as sender
   socket.on("read-message", (data) => {
-    //const readMessage = data.message;
-    
-  })
-
-  //When convo read by recipient, all messages' readStatus
-  //is already updated 
-  socket.on("read-convo", (data) => {
-    store.dispatch(convoReadByRecipient(data.message))
+    store.dispatch(messageReadByRecipient(data.message));
   })
 });
 
