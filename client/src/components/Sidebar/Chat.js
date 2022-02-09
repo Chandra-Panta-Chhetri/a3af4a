@@ -28,6 +28,7 @@ const Chat = (props) => {
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.username);
     if(conversation.numUnread > 0) {
+      console.log("here")
       await props.markConvoAsRead(conversation);
     }
   };

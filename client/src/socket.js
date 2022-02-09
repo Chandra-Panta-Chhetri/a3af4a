@@ -4,6 +4,7 @@ import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
+  convoReadByRecipient,
 } from "./store/conversations";
 
 const socket = io("http://localhost:8000");
@@ -23,6 +24,18 @@ socket.on("connect", () => {
     const activeConvo = store.getState().activeConversation;
     store.dispatch(setNewMessage(data.message, data.sender, activeConvo));
   });
+
+  //When recipient is in the same convo as sender
+  socket.on("read-message", (data) => {
+    //const readMessage = data.message;
+    
+  })
+
+  //When convo read by recipient, all messages' readStatus
+  //is already updated 
+  socket.on("read-convo", (data) => {
+    store.dispatch(convoReadByRecipient(data.message))
+  })
 });
 
 export default socket;

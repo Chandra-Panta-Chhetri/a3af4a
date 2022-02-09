@@ -79,4 +79,29 @@ export const addNewConvoToStore = (state, recipientId, message) => {
   });
 };
 
-export const markConvoAsRead = (state, conversationId) => state.map((convo) => convo.id === conversationId ? {...convo, numUnread: 0} :convo)
+//Marking current user's convo as read
+export const markConvoAsReadInStore = (state, conversationId) => state.map((convo) => convo.id === conversationId ? {...convo, numUnread: 0} : convo)
+
+//Marking that the sender's message has been read by recipient
+export const markConvoAsReadByRecipientInStore = (state, latestMsgInConvo) => {
+  return state.map((convo) => {
+    if(convo.id === latestMsgInConvo.conversationId){
+      const messagesCopy = [...convo.messages];
+
+      //Messages are sorted from oldest -> newest, so loop from end -> beginning
+      //Update read status of the latest message in the convo read by recipient
+      for(let i = messagesCopy.length - 1; i >= 0; i++){
+        let msg = messagesCopy[i];
+        if(latestMsgInConvo.id === msg.id){
+          messagesCopy[i].readStatus = true;
+          break;
+        }
+      }
+      
+      const convoCopy = {...convo, messages: messagesCopy};
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  })
+}

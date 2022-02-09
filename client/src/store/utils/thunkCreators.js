@@ -120,13 +120,42 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-export const saveConvoReadStatus = (conversation) => async (dispatch) => {
+const sendReadStatusForMsg = (message) => {
+  //notify other user in convo that message has been read
+  socket.emit("read-message", {
+    message
+  });
+}
+
+const sendReadStatusForConvo = (lastMsgInConvo) => {
+  //notify other user that latest message in convo has been read
+  socket.emit("read-convo", {
+    message: lastMsgInConvo
+  });
+}
+
+const findLatestMsgFromSender = (messages, senderId) => {
+  //Messages are ordered from oldest -> newest, so loop from end -> beginning
+  for(let i = messages.length - 1; i >= 0; i--){
+    let m = messages[i]
+    if(m.senderId === senderId){
+      return m
+    }
+  }
+  return null
+}
+
+export const saveConvoReadStatus = (conversation) => async (dispatch, getState) => {
   try {
     const senderId = conversation.otherUser.id;
     await axios.patch('api/messages/read-status', {
       senderId,
     });
     dispatch(markConversationAsRead(conversation.id));
+    const message = findLatestMsgFromSender(conversation.messages, senderId);
+    if(message){
+      sendReadStatusForConvo(message)
+    }
   } catch (error) {
     console.error(error);
   }
