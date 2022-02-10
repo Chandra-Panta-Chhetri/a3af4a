@@ -1,10 +1,10 @@
 import React from "react";
-import { Box, Chip, Typography } from "@material-ui/core";
+import { Box, Chip } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
-import { saveConvoReadStatus } from "../../store/utils/thunkCreators";
+import { saveConversationReadStatus } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       cursor: "grab"
     }
+  },
+  unreadCount: {
+    marginRight: "15px"
   }
 }));
 
@@ -28,7 +31,7 @@ const Chat = (props) => {
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.username);
     if(conversation.numUnread > 0) {
-      await props.markConvoAsRead(conversation);
+      await props.setConversationAsRead(conversation);
     }
   };
 
@@ -41,7 +44,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
-      {numUnread > 0 && <Chip label={numUnread} size="small" color="primary" />}
+      {numUnread > 0 && <Chip className={classes.unreadCount} label={numUnread} size="small" color="primary" />}
     </Box>
   );
 };
@@ -51,7 +54,7 @@ const mapDispatchToProps = (dispatch) => {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
     },
-    markConvoAsRead: (conversation) => dispatch(saveConvoReadStatus(conversation))
+    setConversationAsRead: (conversation) => dispatch(saveConversationReadStatus(conversation))
   };
 };
 

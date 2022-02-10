@@ -102,7 +102,7 @@ export const postMessage = (body) => async (dispatch, getState) => {
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message, null,activeConvo));
+      dispatch(setNewMessage(data.message, null, activeConvo));
     }
 
     sendMessage(data, body);
@@ -129,15 +129,15 @@ const sendReadStatusToSender = (message) => {
 const findLatestMsgFromSender = (messages, senderId) => {
   //Messages are ordered from oldest -> newest, so loop from end -> beginning
   for(let i = messages.length - 1; i >= 0; i--){
-    let m = messages[i]
+    let m = messages[i];
     if(m.senderId === senderId){
-      return m
+      return m;
     }
   }
-  return null
+  return null;
 }
 
-export const saveConvoReadStatus = (conversation) => async (dispatch) => {
+export const saveConversationReadStatus = (conversation) => async (dispatch) => {
   try {
     const senderId = conversation.otherUser.id;
     await axios.patch('/api/messages/read-status', {
