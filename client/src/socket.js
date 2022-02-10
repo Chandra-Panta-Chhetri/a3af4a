@@ -30,13 +30,13 @@ socket.on("connect", () => {
     store.dispatch(removeOfflineUser(id));
   });
 
-  socket.on("new-message", (data) => {
+  socket.on("new-message", async (data) => {
     const message = data.message;
     const {activeConversation, conversations} = store.getState();
     
     store.dispatch(setNewMessage(message, data.sender, activeConversation));
     if(isMessageRead(message, activeConversation, conversations)) {
-     saveMessageReadStatus(message);
+     await saveMessageReadStatus(message);
     }
   });
 
