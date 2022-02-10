@@ -18,7 +18,7 @@ class Message(utils.CustomModel):
     updatedAt = models.DateTimeField(auto_now=True)
     readStatus = models.BooleanField(null=False, default=False)
 
-    def mark_convo_as_read(conversation, sender_id):
+    def mark_conversation_as_read(conversation, sender_id):
         messagesQuerySet = Message.objects.filter(senderId=sender_id, conversation=conversation, readStatus=False)
         messagesQuerySet.update(readStatus=True)
 

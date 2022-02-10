@@ -51,39 +51,41 @@ class Messages(APIView):
             return HttpResponse(status=500)
 
 
-class UpdateReadStatusForConvo(APIView):
+class ReadStatusForConversation(APIView):
     """expects { senderId } in body"""
     """Marks all the messages sent by senderId in a conversation as read"""
     def patch(self, request: Request):
         try:
             body = request.data
             user = get_user(request)
+            sender_id = body.get("senderId")
 
             if user.is_anonymous:
                 return HttpResponse(status=401)
             
-            sender_id = body.get("senderId")
+            # Checks if user has a convo with the sender
             conversation = Conversation.find_conversation(sender_id, user.id)
             if not conversation:
                 return HttpResponse(status=404)
             
-            Message.mark_convo_as_read(conversation=conversation, sender_id=sender_id)
+            Message.mark_conversation_as_read(conversation=conversation, sender_id=sender_id)
             return HttpResponse(status=200)
         except Exception as e:
             return HttpResponse(status=500)
 
-class UpdateMessageReadStatus(APIView):
+class ReadStatusForMessage(APIView):
     """expects { senderId } in body and message_id in params"""
     """Marks message with id message_id as read"""
     def patch(self, request: Request, message_id: int):
         try:
             body = request.data
+            sender_id = body.get("senderId")
             user = get_user(request)
 
             if user.is_anonymous:
                 return HttpResponse(status=401)
             
-            sender_id = body.get("senderId")
+            # Checks if user has a convo with the sender
             conversation = Conversation.find_conversation(sender_id, user.id)
             if not conversation:
                 return HttpResponse(status=404)
@@ -91,5 +93,4 @@ class UpdateMessageReadStatus(APIView):
             Message.mark_message_as_read(message_id=message_id)
             return HttpResponse(status=200)
         except Exception as e:
-            print(e)
             return HttpResponse(status=500)

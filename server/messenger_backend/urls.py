@@ -27,6 +27,6 @@ urlpatterns = [
     path("api/conversations", api.Conversations.as_view()),
     path("api/messages", api.Messages.as_view()),
     path("api/users/<str:username>", api.Username.as_view()),
-    path("api/messages/read-status", api.UpdateReadStatusForConvo.as_view()),
-    path("api/messages/<int:message_id>/read-status", api.UpdateMessageReadStatus.as_view()),
+    path("api/messages/read-status", api.ReadStatusForConversation.as_view()),
+    path("api/messages/<int:message_id>/read-status", api.ReadStatusForMessage.as_view()),
 ]
