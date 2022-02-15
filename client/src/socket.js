@@ -10,11 +10,7 @@ import { saveMessageReadStatus } from "./store/utils/thunkCreators";
 
 const isMessageRead = (message, activeConversation, conversations) => {
   //message is read by recipient if they recieve a message in their currently active conversation
-  const convoMsgBelongsTo = conversations.find((c) => c.id === message.conversationId)
-  if(!convoMsgBelongsTo){
-    return false;
-  }
-  return convoMsgBelongsTo.otherUser.username === activeConversation;
+  return !!conversations?.find((c) => c.id === message.conversationId && c.otherUser.username === activeConversation);
 }
 
 const socket = io("http://localhost:8000");

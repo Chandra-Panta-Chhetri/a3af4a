@@ -15,16 +15,19 @@ const useStyles = makeStyles((theme) => ({
   },
   previewText: {
     fontSize: 12,
-    color: "#9CADC8",
     letterSpacing: -0.17,
+    color: (hasUnreadMessages) =>
+      hasUnreadMessages ? 'black' : '#9CADC8',
+    fontWeight: (hasUnreadMessages) =>
+      hasUnreadMessages ? 'bold' : 'regular',
   },
 }));
 
 const ChatContent = (props) => {
-  const classes = useStyles();
-
   const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
+  const { latestMessageText, otherUser, numUnread } = conversation;
+
+  const classes = useStyles(numUnread && numUnread > 0);
 
   return (
     <Box className={classes.root}>
