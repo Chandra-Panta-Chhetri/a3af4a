@@ -46,7 +46,7 @@ const SenderBubble = (props) => {
           alt={otherUser.username}
           src={otherUser.photoUrl}
           className={classes.otherUserAvatar}
-        ></Avatar>
+        />
       )}
     </Box>
   );
