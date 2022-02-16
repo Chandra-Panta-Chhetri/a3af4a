@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box } from "@material-ui/core";
 import { SenderBubble, OtherUserBubble } from "../ActiveChat";
 import moment from "moment";
@@ -16,7 +16,7 @@ const findReadMessage = (messages, senderId) => {
 
 const Messages = (props) => {
   const { messages, otherUser, userId } = props;
-  const readMessage = findReadMessage(messages, userId); 
+  const readMessage = useMemo(() => findReadMessage(messages, userId), [userId, messages]); 
 
   return (
     <Box>
