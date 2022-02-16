@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  markConversationAsRead,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -93,14 +94,15 @@ const sendMessage = (data, body) => {
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
-export const postMessage = (body) => async (dispatch) => {
+export const postMessage = (body) => async (dispatch, getState) => {
   try {
     const data = await saveMessage(body);
+    const activeConvo = getState().activeConversation
 
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(data.message, null, activeConvo));
     }
 
     sendMessage(data, body);
@@ -113,6 +115,26 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
     const { data } = await axios.get(`/api/users/${searchTerm}`);
     dispatch(setSearchedUsers(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const sendReadStatusToSender = (readMsg) => {
+  socket.emit("read-message", {
+    message: readMsg
+  });
+}
+
+export const saveConversationReadStatus = (conversation) => async (dispatch) => {
+  try {
+    const senderId = conversation.otherUser.id;
+    const { data: lastReadMsg } = await axios.patch('/api/messages/read-status', {
+      senderId,
+      conversationId: conversation.id
+    });
+    dispatch(markConversationAsRead(conversation.id));
+    sendReadStatusToSender(lastReadMsg)
   } catch (error) {
     console.error(error);
   }

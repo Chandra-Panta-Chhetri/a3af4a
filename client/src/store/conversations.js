@@ -4,6 +4,8 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
+  markConversationAsReadInStore,
+  markMessageAsReadByRecipientInStore
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -15,6 +17,8 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
+const MARK_CONVERSATION_AS_READ = 'MARK_CONVERSATION_AS_READ';
+const MESSAGE_READ_BY_RECIPIENT = "MESSAGE_READ_BY_RECIPIENT";
 
 // ACTION CREATORS
 
@@ -25,10 +29,17 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender) => {
+export const setNewMessage = (message, sender, activeConvo = null) => {
   return {
     type: SET_MESSAGE,
-    payload: { message, sender: sender || null },
+    payload: { message, sender: sender || null, activeConvo },
+  };
+};
+
+export const markConversationAsRead = (conversationId) => {
+  return {
+    type: MARK_CONVERSATION_AS_READ,
+    payload: conversationId,
   };
 };
 
@@ -67,6 +78,13 @@ export const addConversation = (recipientId, newMessage) => {
   };
 };
 
+export const setMessageAsRead = (message) => {
+  return {
+    type: MESSAGE_READ_BY_RECIPIENT,
+    payload: message
+  }
+}
+
 // REDUCER
 
 const reducer = (state = [], action) => {
@@ -75,6 +93,8 @@ const reducer = (state = [], action) => {
       return action.conversations;
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
+    case MARK_CONVERSATION_AS_READ:
+      return markConversationAsReadInStore(state, action.payload);
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }
@@ -91,6 +111,8 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
+    case MESSAGE_READ_BY_RECIPIENT:
+      return markMessageAsReadByRecipientInStore(state, action.payload);
     default:
       return state;
   }
