@@ -52,45 +52,26 @@ class Messages(APIView):
 
 
 class ReadStatusForConversation(APIView):
-    """expects { senderId } in body"""
+    """expects { senderId, conversationId } in body"""
     """Marks all the messages sent by senderId in a conversation as read"""
     def patch(self, request: Request):
         try:
             body = request.data
             user = get_user(request)
             sender_id = body.get("senderId")
+            conversation_id = body.get("conversationId")
 
             if user.is_anonymous:
                 return HttpResponse(status=401)
             
-            # Checks if user has a convo with the sender
-            conversation = Conversation.find_conversation(sender_id, user.id)
+            conversation = Conversation.objects.get(id=conversation_id)
             if not conversation:
                 return HttpResponse(status=404)
             
             Message.mark_conversation_as_read(conversation=conversation, sender_id=sender_id)
-            return HttpResponse(status=200)
+            last_read_msg = Message.objects.filter(conversation=conversation, senderId=sender_id).order_by("-createdAt")[0]
+            response = {**last_read_msg.to_dict(["id", "text", "senderId", "createdAt", "readStatus"]), "conversationId": conversation_id}
+            return JsonResponse(response)
         except Exception as e:
-            return HttpResponse(status=500)
-
-class ReadStatusForMessage(APIView):
-    """expects { senderId } in body and message_id in params"""
-    """Marks message with id message_id as read"""
-    def patch(self, request: Request, message_id: int):
-        try:
-            body = request.data
-            sender_id = body.get("senderId")
-            user = get_user(request)
-
-            if user.is_anonymous:
-                return HttpResponse(status=401)
-            
-            # Checks if user has a convo with the sender
-            conversation = Conversation.find_conversation(sender_id, user.id)
-            if not conversation:
-                return HttpResponse(status=404)
-            
-            Message.mark_message_as_read(message_id=message_id)
-            return HttpResponse(status=200)
-        except Exception as e:
+            print(e)
             return HttpResponse(status=500)

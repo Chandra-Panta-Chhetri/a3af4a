@@ -120,48 +120,22 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-const sendReadStatusToSender = (message) => {
+const sendReadStatusToSender = (readMsg) => {
   socket.emit("read-message", {
-    message
+    message: readMsg
   });
-}
-
-const findLatestMsgFromSender = (messages, senderId) => {
-  //Messages are ordered from oldest -> newest, so loop from end -> beginning
-  for(let i = messages.length - 1; i >= 0; i--){
-    let m = messages[i];
-    if(m.senderId === senderId){
-      return m;
-    }
-  }
-  return null;
 }
 
 export const saveConversationReadStatus = (conversation) => async (dispatch) => {
   try {
     const senderId = conversation.otherUser.id;
-    await axios.patch('/api/messages/read-status', {
+    const { data: lastReadMsg } = await axios.patch('/api/messages/read-status', {
       senderId,
+      conversationId: conversation.id
     });
     dispatch(markConversationAsRead(conversation.id));
-    const message = findLatestMsgFromSender(conversation.messages, senderId);
-    if(message){
-      sendReadStatusToSender(message)
-    }
+    sendReadStatusToSender(lastReadMsg)
   } catch (error) {
     console.error(error);
   }
 };
-
-export const saveMessageReadStatus = async (message) => {
-  try {
-    const senderId = message.senderId;
-    const messageId = message.id;
-    await axios.patch(`/api/messages/${messageId}/read-status`, {
-      senderId
-    });
-    sendReadStatusToSender(message)
-  } catch (error) {
-    console.error(error);
-  }
-}

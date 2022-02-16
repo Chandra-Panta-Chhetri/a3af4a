@@ -6,11 +6,10 @@ import {
   addOnlineUser,
   setMessageAsRead,
 } from "./store/conversations";
-import { saveMessageReadStatus } from "./store/utils/thunkCreators";
+import { saveConversationReadStatus } from "./store/utils/thunkCreators";
 
-const isMessageRead = (message, activeConversation, conversations) => {
-  //message is read by recipient if they recieve a message in their currently active conversation
-  return !!conversations?.find((c) => c.id === message.conversationId && c.otherUser.username === activeConversation);
+const findActiveConvoWhereMsgSent = (message, activeConversation, conversations) => {
+  return conversations?.find((c) => c.id === message.conversationId && c.otherUser.username === activeConversation);
 }
 
 const socket = io("http://localhost:8000");
@@ -31,8 +30,11 @@ socket.on("connect", () => {
     const {activeConversation, conversations} = store.getState();
     
     store.dispatch(setNewMessage(message, data.sender, activeConversation));
-    if(isMessageRead(message, activeConversation, conversations)) {
-     await saveMessageReadStatus(message);
+    
+    //check if message read
+    const convoWhereMsgSent = findActiveConvoWhereMsgSent(message, activeConversation, conversations);
+    if(convoWhereMsgSent !== undefined) {
+      await store.dispatch(saveConversationReadStatus(convoWhereMsgSent))
     }
   });
 

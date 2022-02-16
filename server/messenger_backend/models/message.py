@@ -21,8 +21,3 @@ class Message(utils.CustomModel):
     def mark_conversation_as_read(conversation, sender_id):
         messagesQuerySet = Message.objects.filter(senderId=sender_id, conversation=conversation, readStatus=False)
         messagesQuerySet.update(readStatus=True)
-
-    def mark_message_as_read(message_id):
-        message = Message.objects.get(id=message_id)
-        message.readStatus = True
-        message.save()
